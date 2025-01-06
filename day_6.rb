@@ -3,7 +3,7 @@ def current_position
     line.map.with_index do |char, x|
       spot = @local_map[y][x]
       if spot == "^" || spot == ">" || spot == "v" || spot == "<"
-        [y,x]
+        [y, x]
       end
     end
   end.flatten.compact
@@ -15,7 +15,7 @@ def obstacle_positions
     line.each_with_index do |char, x|
       spot = @local_map[y][x]
       if spot == "#"
-        obstacles << [y,x]
+        obstacles << [y, x]
       end
     end
   end
@@ -32,17 +32,17 @@ def guard_direction(current_position)
     "down"
   when "<"
     "left"
-  end rescue binding.irb
+  end
 end
 
 def move_up
   current_position = current_position()
   obstacle_positions = obstacle_positions()
   next_position = [current_position[0]-1, current_position[1]]
-  
+
   if !obstacle_positions.include?(next_position)
     @local_map[current_position[0]][current_position[1]] = "X"
-    return false if next_position[0] > 9 || next_position[1] > 9
+    return false if next_position[0] < 0 || next_position[0] > MAX_Y || next_position[1] < 0 || next_position[1] > MAX_X
     @local_map[next_position[0]][next_position[1]] = "^"
     true
   else
@@ -54,10 +54,10 @@ def move_right
   current_position = current_position()
   obstacle_positions = obstacle_positions()
   next_position = [current_position[0], current_position[1]+1]
-  
+
   if !obstacle_positions.include?(next_position)
     @local_map[current_position[0]][current_position[1]] = "X"
-    return false if next_position[0] > 9 || next_position[1] > 9
+    return false if next_position[0] < 0 || next_position[0] > MAX_Y || next_position[1] < 0 || next_position[1] > MAX_X
     @local_map[next_position[0]][next_position[1]] = ">"
     true
   else
@@ -69,10 +69,10 @@ def move_down
   current_position = current_position()
   obstacle_positions = obstacle_positions()
   next_position = [current_position[0]+1, current_position[1]]
-  
+
   if !obstacle_positions.include?(next_position)
     @local_map[current_position[0]][current_position[1]] = "X"
-    return false if next_position[0] > 9 || next_position[1] > 9
+    return false if next_position[0] < 0 || next_position[0] > MAX_Y || next_position[1] < 0 || next_position[1] > MAX_X
     @local_map[next_position[0]][next_position[1]] = "v"
     true
   else
@@ -84,10 +84,10 @@ def move_left
   current_position = current_position()
   obstacle_positions = obstacle_positions()
   next_position = [current_position[0], current_position[1]-1]
-  
+
   if !obstacle_positions.include?(next_position)
     @local_map[current_position[0]][current_position[1]] = "X"
-    return false if next_position[0] > 9 || next_position[1] > 9
+    return false if next_position[0] < 0 || next_position[0] > MAX_Y || next_position[1] < 0 || next_position[1] > MAX_X
     @local_map[next_position[0]][next_position[1]] = "<"
     true
   else
@@ -107,14 +107,15 @@ def change_direction
   @local_map[current_position[0]][current_position[1]] = next_directions[direction]
 end
 
-file = File.read("sample_6.txt")
+file = File.read("input_day_6.txt")
+# file = File.read("sample_6.txt")
 @local_map = file.split("\n").map(&:chars)
 current_position = current_position()
-obstacle_positions = obstacle_positions
-guard_direction = guard_direction(current_position)
+MAX_Y = @local_map.length - 1
+MAX_X = @local_map[0].length - 1
 
 while true
-  unless send("move_#{guard_direction(current_position)}")
+  unless send(:"move_#{guard_direction(current_position)}")
     if current_position().empty?
       break
     else
@@ -123,5 +124,5 @@ while true
   end
 end
 
-binding.irb
-puts current_position(local_map)
+# File.write "saida.txt", @local_map.map { |a| p a.join }.join("\n")
+puts @local_map.flatten.count("X")
