@@ -22,7 +22,6 @@ valid_test_values = file.map do |equation|
       blank_space = dup_numbers.index(" ")
       dup_numbers[blank_space] = operators.shift
     end
-    # binding.irb if dup_numbers == "6*8||6*15"
     dup_numbers.gsub!("+", " + ")
     dup_numbers.gsub!("*", " * ")
     dup_numbers.gsub!("||", " || ")
